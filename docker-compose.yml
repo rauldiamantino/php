@@ -12,6 +12,7 @@ services:
       - ${PROJECT_PATH}/vendor:/var/www/vendor
       - ${PROJECT_PATH}/app:/var/www/app
       - ${PROJECT_PATH}/app/logs:/var/log/apache2
+
     links:
       - db
       - memcached
