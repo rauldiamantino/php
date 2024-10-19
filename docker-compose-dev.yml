@@ -16,6 +16,8 @@ services:
     links:
       - db
       - memcached
+    networks:
+      - network
 
   db:
     image: mysql:latest
@@ -23,9 +25,11 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /var/lib/mysql
+      - ./mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - network
 
   memcached:
     image: memcached:latest
@@ -33,3 +37,26 @@ services:
     ports:
       - "11211:11211"
     command: memcached -m 64m
+    networks:
+      - network
+
+  https-portal:
+    image: steveltn/https-portal:1
+    volumes:
+      - ${PROJECT_PATH}/certificados :/var/lib/https-portal
+    ports:
+      - '80:80'
+      - '443:443'
+    links:
+      - php
+    restart: always
+
+    environment:
+      DOMAINS: '360help.localhost -> http://php:80'
+      STAGE: 'local'
+      FORCE_RENEW: 'false'
+    networks:
+      - network
+
+networks:
+  network:
