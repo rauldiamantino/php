@@ -1,0 +1,34 @@
+services:
+  php:
+    build:
+      context: ${PROJECT_PATH}
+      dockerfile: Dockerfile
+    container_name: ambiente-php
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${PROJECT_PATH}/public:/var/www/html
+      - ${PROJECT_PATH}/vendor:/var/www/vendor
+      - ${PROJECT_PATH}/app:/var/www/app
+      - ${PROJECT_PATH}/app/logs:/var/log/apache2
+    links:
+      - db
+      - memcached
+
+  db:
+    image: mysql:latest
+    container_name: mysql-php
+    ports:
+      - "3306:3306"
+    volumes:
+      - /var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  memcached:
+    image: memcached:latest
+    container_name: memcached-php
+    ports:
+      - "11211:11211"
+    command: memcached -m 64m
